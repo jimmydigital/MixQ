@@ -37,7 +37,7 @@ No cloud, no tracking, no accounts. 100% private and local.
 
 ## Installation (recommended – packaged app)
 
-1. Download the latest release `.dmg` from the [Releases page](https://github.com/yourusername/MixQ/releases)
+1. Download the latest release `.dmg` from the [Releases page](https://github.com/jimmydigital/MixQ/releases)
 2. Open the `.dmg` → drag **MixQ.app** to Applications
 3. Launch MixQ
 
