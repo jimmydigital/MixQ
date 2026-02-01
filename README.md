@@ -27,8 +27,7 @@ No cloud, no tracking, no accounts. 100% private and local.
   Packaged with Briefcase → double-click launch, no terminal required
 
 ## Screenshots
-
-![MixQ in action – queue view with dark mode](mixq_ss.png){width=640px} 
+<img src="mixq_ss.png" alt="MixQ in action – queue view with dark mode" width="640" />
 
 ## Requirements
 
@@ -41,13 +40,12 @@ No cloud, no tracking, no accounts. 100% private and local.
 1. Download the latest release `.dmg` from the [Releases page](https://github.com/yourusername/MixQ/releases)
 2. Open the `.dmg` → drag **MixQ.app** to Applications
 3. Launch MixQ
-4. Grant Automation permissions when prompted (Music.app & Shortcuts if using older version)
 
 ## Running from source (development)
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/MixQ.git
+   git clone https://github.com/jimmydigital/MixQ.git
    cd MixQ
    ```
 
@@ -59,12 +57,12 @@ No cloud, no tracking, no accounts. 100% private and local.
 
 3. Install dependencies:
    ```bash
-   pip install flask pywebview
+   pip install -r MixQ/src/MixQ/requirements.txt
    ```
 
 4. Run:
    ```bash
-   python src/MixQ/app.py
+   cd MixQ; make test-local
    ```
    → Open http://127.0.0.1:8085 in your browser
 
@@ -77,28 +75,13 @@ No cloud, no tracking, no accounts. 100% private and local.
 
 2. Create & build:
    ```bash
-   briefcase create macOS
-   briefcase build macOS
-   briefcase run macOS
+   make rebuild
    ```
 
 3. Package for distribution:
    ```bash
-   briefcase package macOS
+   make package
    ```
-
-## Shortcuts Setup (only if using older version with Shortcuts)
-
-Two Shortcuts are required for older queue-sync behavior (new version uses direct AppleScript — no setup needed):
-
-1. **ClearUpNext**  
-   - Action: Music → Clear Up Next
-
-2. **AddToUpNext**  
-   - Action: Music → Find Music (filter: Persistent ID is Shortcut Input)  
-   - Action: Music → Add to Up Next
-
-Grant Automation permissions in System Settings → Privacy & Security → Automation.
 
 ## Contributing
 
