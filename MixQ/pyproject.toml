@@ -1,0 +1,129 @@
+# This project was generated with 0.3.26 using template: https://github.com/beeware/briefcase-template @ v0.3.26
+[tool.briefcase]
+project_name = "MixQ"
+bundle = "com.jaredwatkins.mixq"
+version = "0.0.1"
+url = "https://jaredwatkins.com/MixQ"
+license.file = "LICENSE"
+author = "Jared Watkins"
+author_email = "pink.milk5125@fastmail.com"
+
+[tool.briefcase.app.MixQ]
+formal_name = "MixQ"
+icon = "src/MixQ/resources/mixq"
+description = "Web controller for Apple Music app on OSX."
+long_description = """MixQ  
+Your personal local music queue controller for macOS  
+
+MixQ turns your Mac into a powerful, private radio-style DJ station using your existing Apple Music library.  
+
+Load any playlist, rearrange tracks, randomize, remove songs, or skip ahead—all without interrupting the currently playing track. The browser-based interface gives you full control over the queue while respecting the Music app's native playback state.  
+
+Key features:  
+• Non-interruptive queue management — load, edit, or shuffle playlists without stopping what's playing  
+• Accurate start time estimates with seconds precision and timezone support  
+• Dark mode toggle for comfortable late-night sessions  
+• Persists your queue across reloads  
+• Simple playback controls (play/pause, next, previous)  
+• Clean, responsive design that feels like a native macOS utility  
+
+Perfect for:  
+- Building the perfect background mix for work, study, or parties  
+- Taking full control over what plays next in your library  
+- Anyone who wants a lightweight, local alternative to streaming queue managers  
+
+100% private — no cloud, no tracking, no accounts. Runs entirely on your Mac using your local music files.  
+
+MixQ: Queue your vibe, your way. 🎧
+"""
+sources = [
+    "src/MixQ",
+]
+test_sources = [
+    "tests",
+]
+
+requires = [
+    # Add your cross-platform app requirements here
+    "flask>=3.0",
+    "flask_limiter",
+    "pywebview",
+]
+test_requires = [
+    # Add your cross-platform test requirements here
+]
+
+[tool.briefcase.app.MixQ.macOS]
+universal_build = true
+requires = [
+    # Add your macOS-specific app requirements here
+]
+
+[tool.briefcase.app.MixQ.linux]
+requires = [
+    # Add your Linux-specific app requirements here
+]
+
+[tool.briefcase.app.MixQ.linux.system.debian]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.MixQ.linux.system.rhel]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.MixQ.linux.system.suse]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.MixQ.linux.system.arch]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.MixQ.linux.flatpak]
+flatpak_runtime = "org.freedesktop.Platform"
+flatpak_runtime_version = "25.08"
+flatpak_sdk = "org.freedesktop.Sdk"
+
+[tool.briefcase.app.MixQ.windows]
+requires = [
+    # Add your Windows-specific app requirements here
+]
+
+# Mobile deployments
+[tool.briefcase.app.MixQ.iOS]
+requires = [
+    # Add your iOS-specific app requirements here
+]
+
+[tool.briefcase.app.MixQ.android]
+requires = [
+    # Add your Android-specific app requirements here
+]
+
+# Web deployments
+[tool.briefcase.app.MixQ.web]
+requires = [
+    # Add your web-specific app requirements here
+]
+

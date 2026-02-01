@@ -1,0 +1,46 @@
+# Briefcase artifacts
+build/
+dist/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+briefcase-venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Tests
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Temp / backups
+*.~*
+*~
+*.bak
+*.swp
+*.tmp
+
+# macOS junk
+.DS_Store
+.Apple*
+*.apple*
+Icon?
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+

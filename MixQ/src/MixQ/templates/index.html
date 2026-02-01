@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixQ</title>
+    
+    <!-- SortableJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <!-- Our CSS -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon-96x96.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+    <h1>MixQ</h1>
+
+    <div class="controls-top">
+        <label for="playlist-select">Playlist:</label>
+        <select id="playlist-select">
+            {% for playlist in playlists %}
+                <option value="{{ playlist }}">{{ playlist }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="loadPlaylist()">Load</button>
+        <button onclick="randomizeQueue()">Randomize</button>
+
+        <!-- New TZ override -->
+        <label for="tz-select" style="margin-left: 20px;">TZ:</label>
+        <select id="tz-select" onchange="updateQueueTimes()">
+            <option value="">Browser default (may be wrong)</option>
+            <!-- Options populated by JS -->
+        </select>
+    </div>
+    
+
+
+    <div id="now-playing">
+        <h3>Now Playing</h3>
+        <p id="now-details">Nothing playing</p>
+    </div>
+
+    <h2>Queue</h2>
+    <ul id="queue-list"></ul>
+
+    <!-- Floating playback controls -->
+    <div id="floating-controls">
+        <button onclick="control('playpause')">⏯</button>
+        <button onclick="control('previous track')">⏮</button>
+        <button onclick="control('next track')">⏭</button>
+        <!-- Dark mode toggle -->
+        <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
+    </div>
+
+    <!-- Our JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+
