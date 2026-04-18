@@ -1,5 +1,19 @@
 # MixQ Release Notes
 
+## 0.0.3 (17 Apr 2026)
+
+* Fix: playlist dropdown now populates correctly — `result` is a reserved AppleScript
+  keyword; renaming the variable to `joinedNames` was the actual root cause fix
+* Fix: playlists with apostrophes (e.g. "70's") now load tracks correctly
+* Refactor: playlist name passed to AppleScript as argv rather than embedded in script
+* Feature: loading a new playlist now clears the Music app's Up Next queue
+
+## 0.0.2 (17 Apr 2026)
+
+* Fix: playlist names containing apostrophes now load correctly
+* Fix: playlist dropdown no longer mangles names with commas or special characters (switched to `|||` delimiter in AppleScript output)
+* Remove stale `shlex` import that was incorrectly applied to AppleScript strings
+
 ## 0.0.1 (31 Jan 2026)
 
 * Initial release

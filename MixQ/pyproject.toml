@@ -2,7 +2,7 @@
 [tool.briefcase]
 project_name = "MixQ"
 bundle = "com.jaredwatkins.mixq"
-version = "0.0.1"
+version = "0.0.3"
 url = "https://jaredwatkins.com/MixQ"
 license.file = "LICENSE"
 author = "Jared Watkins"
@@ -55,6 +55,9 @@ test_requires = [
 
 [tool.briefcase.app.MixQ.macOS]
 universal_build = true
+codesign_identity = "Developer ID Application: JARED TODD WATKINS (A7VW3CXCU3)"
+team_id = "A7VW3CXCU3"
+notarize = true
 requires = [
     # Add your macOS-specific app requirements here
 ]

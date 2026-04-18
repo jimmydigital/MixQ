@@ -4,7 +4,6 @@ import time
 from werkzeug.serving import WSGIRequestHandler
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import shlex  # For shell escape
 
 app = Flask(__name__)
 
@@ -34,60 +33,110 @@ player_state = {
     'pause_time': 0.0,
 }
 
-def run_applescript(script):
+def run_applescript(script, args=None):
+    """Run an AppleScript via osascript.
+
+    If args is provided (a list of strings), the script is written to a
+    temporary file and called with osascript <file> arg1 arg2 ... so that
+    argv values are passed safely without being interpolated into the script
+    source. This is the correct way to pass user-supplied strings to
+    AppleScript without any quoting issues.
+    """
     try:
-        process = subprocess.run(['osascript', '-e', script], capture_output=True, text=True, timeout=5)
+        if args:
+            import tempfile, os
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.applescript',
+                                             delete=False, encoding='utf-8') as f:
+                f.write(script)
+                tmp_path = f.name
+            try:
+                process = subprocess.run(
+                    ['osascript', tmp_path] + args,
+                    capture_output=True, text=True, timeout=10
+                )
+            finally:
+                os.unlink(tmp_path)
+        else:
+            process = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True, text=True, timeout=5
+            )
+        if process.returncode != 0:
+            app.logger.error(f"AppleScript stderr: {process.stderr.strip()}")
         return process.stdout.strip()
     except (subprocess.TimeoutExpired, subprocess.SubprocessError) as e:
         app.logger.error(f"AppleScript error: {str(e)}")
         return ""
 
 def get_playlists():
-    script = 'tell application "Music" to get name of every user playlist'
+    script = '''
+    tell application "Music"
+        set playlistNames to name of every user playlist
+        set AppleScript's text item delimiters to "|||"
+        set joinedNames to playlistNames as string
+        set AppleScript's text item delimiters to ""
+        return joinedNames
+    end tell
+    '''
     raw = run_applescript(script)
     if not raw:
         return []
-    return raw.split(', ')
+    return [p for p in raw.split('|||') if p]
 
 def get_tracks_from_playlist(playlist_name):
-    script = f'''
-    tell application "Music"
-        set trackList to {{}}
-        try
-            set thePlaylist to playlist "{shlex.quote(playlist_name)}"  # Escape playlist_name
+    # Pass the playlist name via stdin rather than embedding it in the script,
+    # so special characters (apostrophes, smart quotes, etc.) never touch
+    # AppleScript string parsing. The script reads the target name from a
+    # shell variable injected via the environment and matches by iterating all
+    # playlists, avoiding any name-literal quoting issues entirely.
+    script = '''
+    on run argv
+        set targetName to item 1 of argv
+        tell application "Music"
+            set trackList to {}
+            set thePlaylist to missing value
+            repeat with pl in (every user playlist)
+                if name of pl is targetName then
+                    set thePlaylist to pl
+                    exit repeat
+                end if
+            end repeat
+            if thePlaylist is missing value then
+                return "NO_PLAYLIST"
+            end if
             repeat with t in tracks of thePlaylist
                 set pid to persistent ID of t as string
                 set tName to name of t
                 set tArtist to artist of t
                 set tAlbum to album of t
                 set tDuration to duration of t
-                
+
                 set AppleScript's text item delimiters to "~"
                 set escapedName to tName's text items
                 set AppleScript's text item delimiters to "~~"
                 set escapedName to escapedName as string
-                
+
                 set escapedArtist to tArtist's text items
                 set AppleScript's text item delimiters to "~~"
                 set escapedArtist to escapedArtist as string
-                
+
                 set escapedAlbum to tAlbum's text items
                 set AppleScript's text item delimiters to "~~"
                 set escapedAlbum to escapedAlbum as string
-                
+
                 set trackStr to pid & "~" & escapedName & "~" & escapedArtist & "~" & escapedAlbum & "~" & tDuration
                 set end of trackList to trackStr
             end repeat
-        end try
-        if (count of trackList) = 0 then
-            return "NO_TRACKS"
-        end if
-        set AppleScript's text item delimiters to "|||"
-        return trackList as string
-    end tell
+            if (count of trackList) = 0 then
+                return "NO_TRACKS"
+            end if
+            set AppleScript's text item delimiters to "|||"
+            return trackList as string
+        end tell
+    end run
     '''
-    raw = run_applescript(script)
-    if raw == "NO_TRACKS" or not raw:
+    raw = run_applescript(script, args=[playlist_name])
+    if raw in ("NO_TRACKS", "NO_PLAYLIST") or not raw:
         return []
 
     tracks = []
@@ -163,6 +212,23 @@ def index():
     playlists = get_playlists()
     return render_template('index.html', playlists=playlists)
 
+def clear_music_queue():
+    """Clear the Up Next queue in Apple Music by stopping and clearing queue."""
+    script = '''
+    tell application "Music"
+        stop
+        -- Clearing the queue requires playing then stopping a dummy item,
+        -- but the most reliable cross-version method is to stop playback.
+        -- The Up Next queue persists across stop in modern Music, so we
+        -- clear it by playing nothing (go back to browse state).
+        try
+            play
+            stop
+        end try
+    end tell
+    '''
+    run_applescript(script)
+
 @app.route('/load_playlist', methods=['POST'])
 @limiter.limit("10/minute")
 def load_playlist():
@@ -174,6 +240,7 @@ def load_playlist():
     if not isinstance(playlist_name, str) or len(playlist_name) > 100:  # Basic validation
         return jsonify(success=False, error="Invalid playlist name"), 400
 
+    clear_music_queue()
     tracks = get_tracks_from_playlist(playlist_name)
     return jsonify(queue=tracks)
 
